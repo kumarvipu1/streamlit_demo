@@ -25,19 +25,21 @@ if uploaded_file:
     # Plotting
     st.write("### Data Visualization")
     
-    # Checkbox to filter columns
-    if st.checkbox("Filter columns"):
-        columns_to_display = st.multiselect("Select columns to display", data.columns)
-        data = data[columns_to_display]
-    
     # Select type of graph
     graph_type = st.selectbox("Choose a graph type", ["Line Plot", "Bar Plot", "Histogram", "Box Plot", "Scatter Plot"])
     
+    # Check if user wants to select only categorical variables for x-axis
+    if st.checkbox("Select only categorical variables for x-axis"):
+        # Assuming categorical columns have fewer unique values, we filter based on that
+        categorical_columns = [col for col in data.columns if data[col].nunique() < 10]
+    else:
+        categorical_columns = data.columns
+    
     # Select columns based on graph type
     if graph_type in ["Line Plot", "Bar Plot", "Histogram"]:
-        selected_column = st.selectbox("Select a column", data.columns)
+        selected_column = st.selectbox("Select a column", categorical_columns)
     elif graph_type in ["Box Plot", "Scatter Plot"]:
-        x_axis = st.selectbox("Select x-axis", data.columns)
+        x_axis = st.selectbox("Select x-axis", categorical_columns)
         y_axis = st.selectbox("Select y-axis", data.columns)
     
     # Plot based on user's choice
