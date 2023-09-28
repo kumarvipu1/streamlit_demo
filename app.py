@@ -13,33 +13,38 @@ uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 if uploaded_file:
     # Read the dataset
     data = pd.read_csv(uploaded_file)
-
+    
     # Display the first few rows of the dataset
     st.write("### Data Preview")
     st.write(data.head())
-
+    
     # Display summary of the dataset
     st.write("### Data Summary")
     st.write(data.describe())
-
+    
     # Plotting
     st.write("### Data Visualization")
-
+    
+    # Checkbox to filter columns
+    if st.checkbox("Filter columns"):
+        columns_to_display = st.multiselect("Select columns to display", data.columns)
+        data = data[columns_to_display]
+    
     # Select type of graph
     graph_type = st.selectbox("Choose a graph type", ["Line Plot", "Bar Plot", "Histogram", "Box Plot", "Scatter Plot"])
-
+    
     # Select columns based on graph type
     if graph_type in ["Line Plot", "Bar Plot", "Histogram"]:
         selected_column = st.selectbox("Select a column", data.columns)
     elif graph_type in ["Box Plot", "Scatter Plot"]:
         x_axis = st.selectbox("Select x-axis", data.columns)
         y_axis = st.selectbox("Select y-axis", data.columns)
-
+    
     # Plot based on user's choice
     if st.button("Plot"):
         st.write(f"### {graph_type} for selected column(s)")
         fig, ax = plt.subplots()
-
+        
         if graph_type == "Line Plot":
             data[selected_column].plot(kind="line", ax=ax)
             plt.ylabel(selected_column)
@@ -55,6 +60,5 @@ if uploaded_file:
             plt.ylabel(y_axis)
         elif graph_type == "Scatter Plot":
             data.plot(kind="scatter", x=x_axis, y=y_axis, ax=ax)
-
+        
         st.pyplot(fig)
-
